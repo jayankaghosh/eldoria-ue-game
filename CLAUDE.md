@@ -43,7 +43,7 @@ F/V/RMB (tap just before a hit to parry) · Dodge C/L/Q/Alt (+direction) · Inte
 | `Config/DefaultEngine.ini` | Rendering (Lumen, Nanite, VSM, SM6 Metal), `r.AllowOcclusionQueries=0`, navigation tuning |
 | `Scripts/` | Unreal Python + shell tools (see below) |
 | `Story/` | Narration script and recording guide; `MyRecordings/` = the owner's ElevenLabs takes |
-| `Art/` | Logo sources (`make_logo.swift`), Cinzel fonts, loading-screen scenes |
+| `Art/` | Logo and app-icon sources (`make_logo.swift`), Cinzel fonts, loading-screen scenes |
 | `archive/` | Earlier Three.js browser prototypes (not part of the game) |
 
 ## Commands
@@ -58,7 +58,7 @@ Unreal is installed at `/Users/joy/Games/UE_5.8` on the owner's Mac (`UE` below)
 # run an editor Python script headless (log with unreal.log("ELDORIA_INFO ..."); print() is not captured)
 "$UE/Engine/Binaries/Mac/UnrealEditor-Cmd" "$PWD/Eldoria.uproject" -run=pythonscript -script="$PWD/Scripts/x.py" -unattended -nosplash -nopause -stdout -FullStdOutLogOutput
 # package the Mac app into Build/
-"$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Build" -noP4 -unattended -nodebuginfo -IgnoreCookErrors
+"$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Packaged" -noP4 -unattended -nodebuginfo -IgnoreCookErrors
 ```
 
 Scripts that (re)generate content: `build_village_level.py` (the map; delete `Content/Maps/Eldoria.umap`
@@ -105,6 +105,9 @@ with CoreGraphics by the process id). Never capture the full screen.
   `AudioModulation` plugin must stay enabled (village MetaSounds need it or the cook asserts). Package with
   `-IgnoreCookErrors`: a few pack blueprints (Greystone/Sevarog player characters, the village soundscape trigger
   and `BP_TimeOfDay`) were made for older engines and fail to compile; the game does not depend on any of them.
+- The archive step copies the app *without* its data: take `Saved/StagedBuilds/Mac/Eldoria-Mac-Shipping.app` and
+  copy it to `Packaged/Eldoria.app`. The packaged game goes to `Packaged/`, never `Build/`: `Build/Mac/Resources`
+  holds the app icon (`Assets.xcassets` + `AppIcon.icns`, from `Art/Logo/T_AppIcon.png`, made by `make_logo.swift`).
 - Repository: third-party packs are git-ignored (licences forbid redistributing raw assets). Only Eldoria's own
   content is committed; see `SETUP.md` for how others add the packs.
 

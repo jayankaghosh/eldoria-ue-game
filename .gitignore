@@ -6,7 +6,12 @@ DerivedDataCache/
 Plugins/**/Binaries/
 Plugins/**/Intermediate/
 # packaged game (Eldoria.app); share it as a release download, not in the repository
-Build/
+Packaged/
+# Build/Mac/Resources holds the app icon and is kept; anything else Unreal writes under Build/ is not
+Build/*
+!Build/Mac/
+Build/Mac/*
+!Build/Mac/Resources/
 
 # ---------- third-party content: everyone downloads it from Fab (see SETUP.md) ----------
 # Only Eldoria's own assets are in the repository: Fab and Megascans packs may be used in a game,

@@ -71,11 +71,18 @@ Then open `Eldoria.uproject`, or start the game directly:
 
 ```bash
 "$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac \
-  -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Build" \
+  -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Packaged" \
   -noP4 -unattended -nodebuginfo -IgnoreCookErrors
 ```
 
-The finished `Eldoria.app` lands in `Build/`. Expect an hour or more the first time.
+Expect an hour or more the first time. Then take the finished app from the staging folder (Unreal's archive
+step copies a version without the game data) and give it a proper name:
+
+```bash
+rm -rf Packaged/Eldoria.app && ditto Saved/StagedBuilds/Mac/Eldoria-Mac-Shipping.app Packaged/Eldoria.app
+```
+
+The app icon comes from `Build/Mac/Resources` (made by `Scripts/make_logo.swift`).
 
 ## What's in the repository
 

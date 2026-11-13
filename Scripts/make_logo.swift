@@ -1,5 +1,5 @@
 // Renders the ELDORIA title logo and the Chandrabindu Studios card to transparent PNGs.
-// Also the "in association with Claude Code" card, from the Claude app icon (Art/ClaudeIcon.png).
+// Also the "in association with Claude Code" card, and the app icon (T_AppIcon.png, 1024 px),, from the Claude app icon (Art/ClaudeIcon.png).
 // usage: swift Scripts/make_logo.swift Art/Fonts Art/Logo  (then copy Art/Logo/*.png to Content/Splash)
 import AppKit
 import CoreText
@@ -174,5 +174,36 @@ do {
     rule(ctx, from: CGPoint(x: cx + 120, y: 115), to: CGPoint(x: cx + 700, y: 115), thick: 4)
     diamond(ctx, CGPoint(x: cx, y: 115), 14)
     save(ctx, "T_Logo_Claude.png")
+}
+// ---------- app icon: a gold E on dark leather, macOS rounded-square shape ----------
+do {
+    let N = 1024
+    let ctx = makeContext(N, N)
+    // Apple's icon grid: the body is an 824 px rounded square with a soft shadow
+    let body = CGRect(x: 100, y: 100, width: 824, height: 824)
+    let shape = CGPath(roundedRect: body, cornerWidth: 185, cornerHeight: 185, transform: nil)
+    ctx.saveGState()
+    ctx.setShadow(offset: CGSize(width: 0, height: -10), blur: 28, color: CGColor(red: 0, green: 0, blue: 0, alpha: 0.55))
+    ctx.addPath(shape); ctx.setFillColor(CGColor(red: 0.05, green: 0.035, blue: 0.025, alpha: 1)); ctx.fillPath()
+    ctx.restoreGState()
+    // warm glow from the centre, like firelight on dark leather
+    ctx.saveGState()
+    ctx.addPath(shape); ctx.clip()
+    let glow = CGGradient(colorSpace: CGColorSpace(name: CGColorSpace.sRGB)!, colorComponents: [0.30, 0.18, 0.08, 1, 0.12, 0.07, 0.035, 1, 0.04, 0.025, 0.02, 1], locations: [0, 0.55, 1], count: 3)!
+    ctx.drawRadialGradient(glow, startCenter: CGPoint(x: 512, y: 560), startRadius: 0, endCenter: CGPoint(x: 512, y: 512), endRadius: 560, options: [])
+    ctx.restoreGState()
+    // a thin gold frame just inside the edge
+    let frame = CGMutablePath()
+    frame.addPath(CGPath(roundedRect: body.insetBy(dx: 34, dy: 34), cornerWidth: 150, cornerHeight: 150, transform: nil))
+    frame.addPath(CGPath(roundedRect: body.insetBy(dx: 44, dy: 44), cornerWidth: 140, cornerHeight: 140, transform: nil))
+    goldText(ctx, frame.copy(using: nil)!.normalized(using: .evenOdd), body, outline: 1.5)
+    // the initial
+    let (e, ebox) = textPath("E", font("CinzelDecorative-Black", 560), cx: 512, baseline: 335, tracking: 0)
+    goldText(ctx, e, ebox, outline: 6)
+    // underline ornament
+    diamond(ctx, CGPoint(x: 512, y: 262), 16)
+    rule(ctx, from: CGPoint(x: 482, y: 262), to: CGPoint(x: 300, y: 262), thick: 5)
+    rule(ctx, from: CGPoint(x: 542, y: 262), to: CGPoint(x: 724, y: 262), thick: 5)
+    save(ctx, "T_AppIcon.png")
 }
 print("ok")
