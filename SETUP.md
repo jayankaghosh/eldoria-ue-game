@@ -72,7 +72,7 @@ Then open `Eldoria.uproject`, or start the game directly:
 ```bash
 "$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac \
   -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Build" \
-  -noP4 -unattended -nodebuginfo
+  -noP4 -unattended -nodebuginfo -IgnoreCookErrors
 ```
 
 The finished `Eldoria.app` lands in `Build/`. Expect an hour or more the first time.

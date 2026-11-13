@@ -58,7 +58,7 @@ Unreal is installed at `/Users/joy/Games/UE_5.8` on the owner's Mac (`UE` below)
 # run an editor Python script headless (log with unreal.log("ELDORIA_INFO ..."); print() is not captured)
 "$UE/Engine/Binaries/Mac/UnrealEditor-Cmd" "$PWD/Eldoria.uproject" -run=pythonscript -script="$PWD/Scripts/x.py" -unattended -nosplash -nopause -stdout -FullStdOutLogOutput
 # package the Mac app into Build/
-"$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Build" -noP4 -unattended -nodebuginfo
+"$UE/Engine/Build/BatchFiles/RunUAT.sh" BuildCookRun -project="$PWD/Eldoria.uproject" -platform=Mac -clientconfig=Shipping -build -cook -stage -pak -iostore -compressed -archive -archivedirectory="$PWD/Build" -noP4 -unattended -nodebuginfo -IgnoreCookErrors
 ```
 
 Scripts that (re)generate content: `build_village_level.py` (the map; delete `Content/Maps/Eldoria.umap`
@@ -102,7 +102,9 @@ with CoreGraphics by the process id). Never capture the full screen.
 - The title-screen menu pauses the world: use real-time tickers (`FTSTicker`), not world timers, for anything
   that must run there. Continue from the title applies the save in place (instant); mid-game loads reload the map.
 - Packaging: assets referenced only by name in config must be listed in `DirectoriesToAlwaysCook`; the
-  `AudioModulation` plugin must stay enabled (village MetaSounds need it or the cook asserts).
+  `AudioModulation` plugin must stay enabled (village MetaSounds need it or the cook asserts). Package with
+  `-IgnoreCookErrors`: a few pack blueprints (Greystone/Sevarog player characters, the village soundscape trigger
+  and `BP_TimeOfDay`) were made for older engines and fail to compile; the game does not depend on any of them.
 - Repository: third-party packs are git-ignored (licences forbid redistributing raw assets). Only Eldoria's own
   content is committed; see `SETUP.md` for how others add the packs.
 
