@@ -1,0 +1,48 @@
+# ---------- Unreal: generated, rebuilt on every machine ----------
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Plugins/**/Binaries/
+Plugins/**/Intermediate/
+# packaged game (Eldoria.app); share it as a release download, not in the repository
+Build/
+
+# ---------- third-party content: everyone downloads it from Fab (see SETUP.md) ----------
+# Only Eldoria's own assets are in the repository: Fab and Megascans packs may be used in a game,
+# but not redistributed as raw files.
+Content/*
+!Content/Eldoria/
+!Content/Splash/
+!Content/Audio/
+Content/Audio/*
+!Content/Audio/SFX_*.uasset
+!Content/Audio/AMB_Countryside.uasset
+!Content/Audio/Recorded/
+Content/Audio/Recorded/*
+!Content/Audio/Recorded/Narration/
+# rebuilt by scripts from the Game Animation Sample (Scripts/retarget_hero.py)
+Content/Eldoria/Animations/
+Content/Eldoria/Retarget/
+# exported from the village pack (Scripts/export_footsteps.py)
+Audio/Recorded/Footsteps/
+
+# IDE and project files Unreal regenerates
+*.xcworkspace
+*.xcodeproj
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.code-workspace
+
+# macOS
+.DS_Store
+
+# ---------- browser prototypes (archive/) ----------
+archive/node_modules/
+archive/dist/
+
+# ---------- local tools ----------
+.claude/settings.local.json

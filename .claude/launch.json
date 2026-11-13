@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "eldoria-web", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "eldoria-web", "--port", "5173"], "cwd": "archive", "port": 5173 },
+    { "name": "neon-drift", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "neon-drift", "--port", "5174"], "cwd": "archive", "port": 5174 }
+  ]
+}

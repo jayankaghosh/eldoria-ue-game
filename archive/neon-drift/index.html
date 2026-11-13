@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0a0418" />
+  <title>NEON DRIFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="hud-label">SCORE</div>
+      <div id="hud-score" class="hud-value">0</div>
+      <div id="hud-mult" class="hud-mult">x1</div>
+    </div>
+    <div class="hud-center">
+      <div id="hud-shield" class="pill hidden">SHIELD</div>
+      <div id="hud-boost" class="pill pill-boost hidden">BOOST</div>
+    </div>
+    <div class="hud-right">
+      <div class="hud-label">SPEED</div>
+      <div class="hud-value"><span id="hud-speed">0</span><small> KM/H</small></div>
+      <div class="hud-label dist"><span id="hud-dist">0</span> M</div>
+    </div>
+    <button id="btn-pause" class="icon-btn" aria-label="Pause">
+      <svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+    </button>
+    <div id="combo-pop" class="combo-pop"></div>
+  </div>
+
+  <!-- Title -->
+  <section id="screen-title" class="screen">
+    <div class="panel title-panel">
+      <h1 class="logo"><span>NEON</span><span class="logo-b">DRIFT</span></h1>
+      <p class="tagline">Ride the grid. Chase the sun. Don't crash.</p>
+      <button id="btn-play" class="btn btn-primary">PLAY</button>
+      <div class="row">
+        <button id="btn-how" class="btn btn-ghost">HOW TO PLAY</button>
+        <button id="btn-sound" class="btn btn-ghost">SOUND: ON</button>
+      </div>
+      <div class="best">BEST <span id="title-best">0</span></div>
+    </div>
+  </section>
+
+  <!-- How to play -->
+  <section id="screen-how" class="screen hidden">
+    <div class="panel">
+      <h2>HOW TO PLAY</h2>
+      <div class="how-grid">
+        <div class="how-item"><kbd>A</kbd><kbd>D</kbd> / <kbd>&larr;</kbd><kbd>&rarr;</kbd><span>Steer</span></div>
+        <div class="how-item"><kbd>SPACE</kbd> / <kbd>W</kbd><span>Jump</span></div>
+        <div class="how-item"><kbd>ESC</kbd> / <kbd>P</kbd><span>Pause</span></div>
+        <div class="how-item"><kbd>TOUCH</kbd><span>Drag to steer, tap to jump</span></div>
+      </div>
+      <ul class="legend">
+        <li><i class="dot dot-shard"></i>Energy shards build your multiplier. Miss one and it resets.</li>
+        <li><i class="dot dot-wall"></i>Red barriers are solid. Steer around them.</li>
+        <li><i class="dot dot-low"></i>Low orange walls can be jumped.</li>
+        <li><i class="dot dot-shield"></i>Shields absorb one hit.</li>
+        <li><i class="dot dot-boost"></i>Boost rings make you briefly invincible and double points.</li>
+      </ul>
+      <button id="btn-how-back" class="btn btn-primary">GOT IT</button>
+    </div>
+  </section>
+
+  <!-- Pause -->
+  <section id="screen-pause" class="screen hidden">
+    <div class="panel">
+      <h2>PAUSED</h2>
+      <button id="btn-resume" class="btn btn-primary">RESUME</button>
+      <button id="btn-quit" class="btn btn-ghost">MAIN MENU</button>
+    </div>
+  </section>
+
+  <!-- Game over -->
+  <section id="screen-over" class="screen hidden">
+    <div class="panel">
+      <h2 class="over-title">WRECKED</h2>
+      <div id="new-best" class="new-best hidden">NEW BEST!</div>
+      <div class="stats">
+        <div><span class="hud-label">SCORE</span><b id="over-score">0</b></div>
+        <div><span class="hud-label">DISTANCE</span><b id="over-dist">0 M</b></div>
+        <div><span class="hud-label">BEST COMBO</span><b id="over-combo">x1</b></div>
+        <div><span class="hud-label">BEST</span><b id="over-best">0</b></div>
+      </div>
+      <button id="btn-retry" class="btn btn-primary">RIDE AGAIN</button>
+      <button id="btn-menu" class="btn btn-ghost">MAIN MENU</button>
+    </div>
+  </section>
+
+  <div id="countdown" class="countdown hidden"></div>
+  <div id="flash" class="flash"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
