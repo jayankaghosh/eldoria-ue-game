@@ -175,6 +175,7 @@ private:
 	float BloodFlash = 0.f;
 	double IgnoreLookUntil = 0.0;
 	bool bSkipNextLook = false;
+	double ArmHoldUntil = 0.0;
 	float ShakeTime = 0.f;
 	float ShakeStrength = 0.f;
 	float ShakeDuration = 0.35f;

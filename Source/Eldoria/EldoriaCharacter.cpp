@@ -270,8 +270,10 @@ void AEldoriaCharacter::Look(const FInputActionValue& Value)
 	if (FPlatformTime::Seconds() < IgnoreLookUntil) return;
 	const FVector2D Axis = Value.Get<FVector2D>();
 	// the capture jump can come later than the guard (the window may only take the mouse once the
-	// loading screen is gone): drop the first movement after a reset, and any impossible leap
-	if (bSkipNextLook || Axis.GetAbsMax() > 120.f)
+	// loading screen is gone): drop the first movement after a reset, and a huge leap shortly after it.
+	// Outside that moment every movement counts, however fast the flick.
+	const bool bJustReset = FPlatformTime::Seconds() < IgnoreLookUntil + 1.0;
+	if (bSkipNextLook || (bJustReset && Axis.GetAbsMax() > 120.f))
 	{
 		bSkipNextLook = false;
 		return;
@@ -516,13 +518,14 @@ void AEldoriaCharacter::ImpactFeedback(float Strength)
 	}
 
 	// camera: a jolt in the direction of the swing, a punch toward the impact, a quick zoom and lens pulse
-	ShakeDuration = 0.18f + 0.22f * Strength;
+	// a short, firm jolt that settles quickly; a long rattle reads as the camera shaking
+	ShakeDuration = 0.12f + 0.14f * Strength;
 	ShakeTime = ShakeDuration;
-	ShakeStrength = 5.f + 18.f * Strength;
+	ShakeStrength = 3.f + 9.f * Strength;
 	const FVector CamRight = FollowCamera->GetRightVector();
 	const float Side = FVector::DotProduct(GetActorForwardVector(), CamRight) >= 0.f ? 1.f : -1.f;
 	ShakeDirection = FVector2D(Side, -0.4f);
-	CameraPunch = 20.f + 45.f * Strength;
+	CameraPunch = 12.f + 28.f * Strength;
 	FovPunch = 2.f + 6.f * Strength;
 	FringePulse = Strength > 0.6f ? 3.f * Strength : 0.f;
 
@@ -688,6 +691,24 @@ void AEldoriaCharacter::TickCombatTest(float DeltaSeconds)
 	{
 		bDumped = true;
 		GEngine->Exec(GetWorld(), TEXT("stat dumpframe -ms=0.4 -root=GameThread"));
+	}
+	// camera steadiness: how often the arm switches between pulling in and easing out
+	{
+		static float PrevArm = 0.f, PrevDelta = 0.f;
+		static int32 Flips = 0;
+		const float Arm = CameraBoom->TargetArmLength;
+		const float D = Arm - PrevArm;
+		if (FMath::Abs(D) > 0.5f)
+		{
+			if (PrevDelta != 0.f && FMath::Sign(D) != FMath::Sign(PrevDelta)) ++Flips;
+			PrevDelta = D;
+		}
+		PrevArm = Arm;
+		if (CombatTestTime > 19.5f && Flips >= 0)
+		{
+			UE_LOG(LogTemp, Display, TEXT("CAMSTEADY arm direction changes over the fight: %d"), Flips);
+			Flips = -1000;
+		}
 	}
 	// where each frame's time goes, once a second
 	static float LastPerf = 0.f;
@@ -1206,8 +1227,10 @@ void AEldoriaCharacter::Tick(float DeltaSeconds)
 		ShakeTime = FMath::Max(0.f, ShakeTime - RealDt);
 		const float K = ShakeTime / FMath::Max(0.01f, ShakeDuration);
 		const float A = ShakeStrength * K * K;
-		// the first instant snaps in the swing's direction, then it rattles out
-		const FVector2D Dir = K > 0.8f ? ShakeDirection * 1.4f : FVector2D(FMath::FRandRange(-1.f, 1.f), FMath::FRandRange(-1.f, 1.f));
+		// the first instant snaps in the swing's direction, then it settles with a smooth wobble
+		// (frame-to-frame random offsets looked like a juddering camera)
+		const float W = (ShakeDuration - ShakeTime) * 55.f;
+		const FVector2D Dir = K > 0.8f ? ShakeDirection * 1.4f : FVector2D(FMath::Sin(W), FMath::Sin(W * 1.37f + 1.f) * 0.6f);
 		Offset += FVector(0.f, Dir.X * A, Dir.Y * A);
 	}
 	CameraPunch = FMath::FInterpTo(CameraPunch, 0.f, RealDt, 9.f);
@@ -1301,8 +1324,12 @@ void AEldoriaCharacter::Tick(float DeltaSeconds)
 			}
 		}
 	}
-	// pull in quickly, ease back out slowly once the way is clear
-	const float ArmSpeed = WantArm < CameraBoom->TargetArmLength ? (bEnemyInWay ? 18.f : 4.f) : 3.f;
+	// Pull in smoothly, and once pulled in, stay there a moment after the way clears: enemies reeling
+	// from hits cross the line of sight again and again, and snapping in and out read as shaking.
+	const double Now = FPlatformTime::Seconds();
+	if (bEnemyInWay) ArmHoldUntil = Now + 1.2;
+	else if (Now < ArmHoldUntil) WantArm = FMath::Min(WantArm, CameraBoom->TargetArmLength);
+	const float ArmSpeed = WantArm < CameraBoom->TargetArmLength ? (bEnemyInWay ? 7.f : 4.f) : 1.5f;
 	CameraBoom->TargetArmLength = FMath::FInterpTo(CameraBoom->TargetArmLength, WantArm, RealDt, ArmSpeed);
 	const float BaseFov = FMath::FInterpTo(FollowCamera->FieldOfView + FovPunch, bRunning ? 79.f : 75.f, DeltaSeconds, 4.f);
 	FollowCamera->SetFieldOfView(BaseFov - FovPunch);
